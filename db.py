@@ -10,7 +10,6 @@ class DbAccess:
         """ Setup connection to file and create tables if they don't exist"""
         self.filename = filename
         connection = lite.connect(filename)
-        connection.execute('pragma journal_mode=wal')
         cursor = connection.cursor()
         cursor.execute('CREATE TABLE IF NOT EXISTS url (id INTEGER PRIMARY KEY, url VARCHAR(256), count INTEGER);')
 
@@ -40,7 +39,8 @@ class DbAccess:
         cursor.execute('UPDATE url SET count = count + 1 WHERE url=?', (url, ))
         connection.commit()
 
-    def getTopSites(self, connection, amount=10):
+    def getTopSites(self, connection, amount=100):
+        #amount = 100 to show top 100 URLs on the home page
         """ Get the top domains using this tool by hits. Ignore specified domains """
         # Select all urls and counts
         cursor = connection.cursor()
@@ -53,7 +53,10 @@ class DbAccess:
             if row[0] == b'':
                 continue
             # Get the domain - part before the first '/'
-            domain = row[0].split('/')[0]
+            # Split based on character I am never going to use - to get full URL in database.
+            domain = row[0].split('£')[0]
+
+            #domain = domain
             # Check if domain is on the ignore list
             on_ignore = False
             for regex in config.TOP_SITES_IGNORE_DOMAIN_RE_MATCH:
