@@ -32,12 +32,15 @@ def makeSVGRequest(count, url, cookie_required):
 def homeRoute():
     """ Home + tool to create (nocount/count + url in url) """
     connection = db_connection.get_connection()
-    return render_template('index.html', top_sites=db_connection.getTopSites(connection, 10))
+    return render_template('index.html', top_sites=db_connection.getTopSites(connection, 100))
 
 @app.route("/count")
 def countRoute():
     """ Return the count for a url and add 1 to it """
     # Attempt to find any sign of a url, return 404 if we can't find anything
+    if not url.startswith("andrews.io"):
+        return config.CANNOT_FIND_URL_MESSAGE, 404
+
     url = utils.getURL(request)
     if url is None:
         return config.CANNOT_FIND_URL_MESSAGE, 404
@@ -55,6 +58,9 @@ def countRoute():
 def countTagRoute():
     """ Return svg of count and add 1 to url """
     url = utils.getURL(request)
+    if not url.startswith("andrews.io"):
+        return config.CANNOT_FIND_URL_MESSAGE, 404
+
     if url is None:
         return config.CANNOT_FIND_URL_MESSAGE, 404
 
@@ -70,6 +76,9 @@ def countTagRoute():
 def nocountRoute():
     """ Return the count for a url """
     url = utils.getURL(request)
+    if not url.startswith("andrews.io"):
+        return config.CANNOT_FIND_URL_MESSAGE, 404
+
     if url is None:
         return config.CANNOT_FIND_URL_MESSAGE, 404
 
@@ -82,6 +91,9 @@ def nocountRoute():
 def nocountTagRoute():
     """ Return svg of count """
     url = utils.getURL(request)
+    if not url.startswith("andrews.io"):
+        return config.CANNOT_FIND_URL_MESSAGE, 404
+
     if url is None:
         return config.CANNOT_FIND_URL_MESSAGE, 404
 
